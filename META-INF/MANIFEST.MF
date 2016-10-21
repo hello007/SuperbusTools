@@ -1,0 +1,11 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 2
+Bundle-Name: Tools
+Bundle-SymbolicName: com.superbus.cok.tools
+Bundle-Version: 1.0.0.qualifier
+Bundle-Activator: com.superbus.cok.tools.Activator
+Bundle-Vendor: SUPERBUS
+Require-Bundle: org.eclipse.ui,
+ org.eclipse.core.runtime
+Bundle-RequiredExecutionEnvironment: JavaSE-1.7
+Bundle-ActivationPolicy: lazy
