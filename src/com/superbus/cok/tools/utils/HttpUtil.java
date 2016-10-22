@@ -11,31 +11,28 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
-import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 import com.superbus.cok.tools.bean.StatisticsBean;
 
 public class HttpUtil
 {
 	static String token = "dc27b994292d83cda09a9695f7c719f5";
-	static String url = "http://post.baibaoyun.com/api/dc27b994292d83cda09a9695f7c719f5";
+	public static String url = "http://post.baibaoyun.com/api/dc27b994292d83cda09a9695f7c719f5";
 	static String key = "F941B4622B1C9A3EFF4D48FDCBA60DBE";
 
 	static String testKey = "55A11A31E81A96EDD3D9E350974FFBA5";
 
 	public static void main(String[] args) throws Exception
 	{
-		System.err.println(queryAccount(url));
+		System.err.println(queryAccount(testKey));
 	}
-
-	public static List<StatisticsBean> queryAccount(String url)
+	
+	public static List<StatisticsBean> queryAccount(String key)
 	{
 		Map<String, String> map = new HashMap<String, String>();
 		map.put("token", token);
 		map.put("method", "queryAccount");
-		map.put("regcode", testKey);
-		// url =
-		// "http://post.baibaoyun.com/api/dc27b994292d83cda09a9695f7c719f5";
+		map.put("regcode", key);
 		return transferStatisticsResult(http(url, map));
 	}
 
@@ -123,7 +120,15 @@ public class HttpUtil
 		{
 			account = account.replaceAll("~", ",");
 			JSONObject jsonObject = JSONObject.parseObject(account);
-			accList.add(DataConvertUtil.getStatisticsBean(jsonObject));
+			if(jsonObject == null)
+			{
+				continue;
+			}
+			StatisticsBean bean = DataConvertUtil.getStatisticsBean(jsonObject);
+			if (bean != null)
+			{
+				accList.add(bean);
+			}
 		}
 		return accList;
 	}

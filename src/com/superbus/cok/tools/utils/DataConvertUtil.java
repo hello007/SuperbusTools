@@ -1,8 +1,5 @@
 package com.superbus.cok.tools.utils;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import com.alibaba.fastjson.JSONObject;
 import com.superbus.cok.tools.bean.AccountInfoBean;
 import com.superbus.cok.tools.bean.BuildingBean;
