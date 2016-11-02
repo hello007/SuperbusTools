@@ -13,7 +13,7 @@ package com.superbus.cok.tools.constant;
  */
 public class InfoConstant
 {
-	public static final String TaoBaoLink = "https://shop152763023.taobao.com/";
+	public static final String TaoBaoLink = "https://shop156888758.taobao.com";//"https://shop152763023.taobao.com/";
 	
 	public static final String QQGroup = "列王巴士完美辅助1群 217769463 \n 列王巴士完美辅助2群 239967066";
 	

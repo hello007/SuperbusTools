@@ -6,6 +6,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 
+import org.apache.log4j.Logger;
 import org.eclipse.swt.events.DisposeEvent;
 import org.eclipse.swt.events.DisposeListener;
 import org.eclipse.swt.events.ModifyEvent;
@@ -47,6 +48,7 @@ import org.eclipse.swt.graphics.Point;
 
 public class Main
 {
+	private static Logger logger = Logger.getLogger(Main.class);
 
 	private Shell shell;
 
@@ -55,6 +57,7 @@ public class Main
 	private Composite normalComposite;
 
 	private org.eclipse.swt.widgets.List accList;
+
 	private Composite taobaoComposite;
 
 	private DataConstant dataConstant = DataConstant.getInstance();
@@ -64,7 +67,7 @@ public class Main
 
 	private String curSerialNum;
 
-	private SerialNumberBean serialNumberBean;
+	private SerialNumberBean serialNumberBean = new SerialNumberBean();
 
 	private static Main main = new Main();
 
@@ -83,6 +86,7 @@ public class Main
 		try
 		{
 			Main window = getInstance();
+			logger.info("main start");
 			window.open();
 		} catch (Exception e)
 		{
@@ -113,6 +117,7 @@ public class Main
 				display.sleep();
 			}
 		}
+		logger.info("application done!");
 	}
 
 	/**
@@ -139,6 +144,11 @@ public class Main
 		curSerialNum = PropertyUtil.loadProperty(
 				InfoConstant.PROPERTY_USER_INFO).getProperty(
 				InfoConstant.keySerialNum);
+		if (curSerialNum != null && curSerialNum.length() == 32)
+		{
+			text序列号.setText(curSerialNum);
+		}
+		logger.info("current serial num is " + curSerialNum);
 	}
 
 	private void initList()
@@ -404,7 +414,7 @@ public class Main
 		shell.setText("巴士辅助window配置器");
 
 		accList = new org.eclipse.swt.widgets.List(shell, SWT.BORDER
-				| SWT.H_SCROLL | SWT.V_SCROLL | SWT.MULTI);
+				| SWT.H_SCROLL | SWT.V_SCROLL | SWT.SINGLE);
 		accList.setBounds(10, 63, 203, 490);
 
 		userInfoComposite = new Composite(shell, SWT.NONE);
@@ -426,7 +436,7 @@ public class Main
 
 	Button checkBtn显示所有账号;
 	Button button账号隐藏;
-	Button button设置分组;
+	Button button设置分组, button统计信息;
 
 	private void createNormalComposite()
 	{
@@ -448,6 +458,11 @@ public class Main
 		button设置分组 = new Button(normalComposite, SWT.NONE);
 		button设置分组.setBounds(229, 27, 98, 30);
 		button设置分组.setText("设置分组");
+
+		button统计信息 = new Button(normalComposite, SWT.NONE);
+		button统计信息.addSelectionListener(statisticsListener);
+		button统计信息.setBounds(345, 27, 98, 30);
+		button统计信息.setText("统计信息");
 		button设置分组.addSelectionListener(selectionAdapter);
 	}
 
@@ -518,8 +533,8 @@ public class Main
 
 		combo版本号 = new Combo(userInfoComposite, SWT.READ_ONLY);
 		combo版本号.setBounds(396, 39, 210, 28);
-		
-		//将版本号置为不可见
+
+		// 将版本号置为不可见
 		label版本号.setVisible(false);
 		combo版本号.setVisible(false);
 
@@ -669,6 +684,11 @@ public class Main
 		button差异性保存 = new Button(composite差异性, SWT.NONE);
 		button差异性保存.setBounds(500, 272, 98, 30);
 		button差异性保存.setText("保存");
+
+		Button addButton = new Button(composite差异性, SWT.NONE);
+		addButton.addSelectionListener(addButtonListener);
+		addButton.setBounds(383, 272, 98, 30);
+		addButton.setText("新增");
 		button差异性保存.addSelectionListener(selectionAdapter);
 	}
 
@@ -688,7 +708,7 @@ public class Main
 		label序列号.setText("序列号");
 
 		text序列号 = new Text(taobaoComposite, SWT.BORDER);
-		text序列号.setText("3A9B4AAF57E9EA6258F6B9F07BE94025");
+		text序列号.setText("55A11A31E81A96EDD3D9E350974FFBA5");
 		text序列号.setBounds(82, 10, 249, 26);
 
 		link淘宝 = new Link(taobaoComposite, SWT.NONE);
@@ -728,6 +748,58 @@ public class Main
 
 	}
 
+	SelectionAdapter statisticsListener = new SelectionAdapter()
+	{
+
+		@Override
+		public void widgetSelected(SelectionEvent e)
+		{
+			StatisticsShell statisticsShell = new StatisticsShell(shell,
+					SWT.SHELL_TRIM | SWT.PRIMARY_MODAL);
+			String text = text序列号.getText().trim();
+			if (text.length() == 32)
+			{
+				statisticsShell.initData(text);
+			}
+			statisticsShell.open();
+			statisticsShell.layout();
+		}
+	};
+
+	// TODO 新增事件
+	SelectionAdapter addButtonListener = new SelectionAdapter()
+	{
+		@Override
+		public void widgetSelected(SelectionEvent e)
+		{
+			String account = text账号.getText();
+			if (account == null || account.trim().length() <= 0)
+			{
+				MessageUtil.showErrorDialog(shell, "提示", "账号为空，请检查再试");
+				return;
+			}
+			String password = text密码.getText();
+			if(password == null || password.trim().length() <= 0)
+			{
+				MessageUtil.showErrorDialog(shell, "提示", "密码为空，请检查再试");
+				return;
+			}
+			AccountInfoBean bean = getAccInfoBeanFromView();
+			List<String> list = serialNumberBean.getIdQueue();
+			if(list.contains(bean.getId()))
+			{
+				MessageUtil.showErrorDialog(shell, "提示", "账号重复，请检查再试");
+				return;
+			}
+			list.add(bean.getId());
+			serialNumberBean.getMap().put(bean.getId(), bean);
+
+			initList();
+			setInput("");
+			MessageUtil.showInfoDialog(shell, "提示", "新增保存成功！");
+		}
+	};
+
 	// TODO selection事件
 	SelectionAdapter selectionAdapter = new SelectionAdapter()
 	{
@@ -760,7 +832,27 @@ public class Main
 				}
 				try
 				{
-					CloudUtil.upload(key, getContent());
+					String result = CloudUtil.upload(key, getContent());
+					logger.info("上传结果：" + result);
+					if (result == null || result.trim().equals(""))
+					{
+						MessageUtil.showErrorDialog(shell, "上传结果",
+								"同步失败，请检查网络等外部因素~");
+						return;
+					}
+					if (result.charAt(0) == '0')
+					{
+						MessageUtil.showInfoDialog(shell, "上传结果", "同步成功！");
+					} else if ("1|无此验证码".equals(result))
+					{
+						MessageUtil.showErrorDialog(shell, "上传结果", "序列号不存在，请检查后重试");
+						return;
+					} else
+					{
+						MessageUtil
+								.showErrorDialog(shell, "上传结果", "同步失败:" + result);
+						return;
+					}
 				} catch (Exception e1)
 				{
 					MessageUtil.showErrorDialog(shell, "上传出错", "上传失败，请稍后重试");
@@ -777,12 +869,25 @@ public class Main
 				try
 				{
 					String content = CloudUtil.download(key);
+					if (content == null || content.trim().equals(""))
+					{
+						MessageUtil.showErrorDialog(shell, "提示",
+								"从服务器同步内容为空，请确认服务器是否有备份~");
+						return;
+					} else if ("1|无此验证码".equals(content))
+					{
+						MessageUtil.showErrorDialog(shell, "提示",
+								"序列号不存在，请检查后重试！");
+						return;
+					}
 					// 下载成功的将key保存到userInfo中
 					Properties properties = new Properties();
 					properties.setProperty(InfoConstant.keySerialNum, key);
 					PropertyUtil.update(InfoConstant.PROPERTY_USER_INFO,
 							properties);
 					curSerialNum = key;
+					logger.info("current serial num has update to "
+							+ curSerialNum);
 					serialNumberBean = DataConvertUtil.syncAndFilter(
 							curSerialNum, content);
 					initList();
@@ -861,6 +966,9 @@ public class Main
 				list.set(index, bean.getId());
 				serialNumberBean.getMap().put(bean.getId(), bean);
 
+				initList();
+				setInput("");
+
 				MessageUtil.showInfoDialog(shell, "提示", "修改保存成功！");
 			} else if (e.widget == button设置分组)
 			{
@@ -890,8 +998,8 @@ public class Main
 
 	private String getContent()
 	{
-
-		return "";
+		String content = serialNumberBean.toString();
+		return content;
 	}
 
 	private AccountInfoBean getAccInfoBeanFromView()

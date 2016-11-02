@@ -37,6 +37,7 @@ public class TechBean
 
 	public void setTechType(int techType)
 	{
+		techType = techType < 0 ? 0 : techType;
 		this.techType = techType;
 	}
 

@@ -46,6 +46,7 @@ public class DataConstant
 		accountTypeData.add("11-搜狗版");
 		accountTypeData.add("12-Facebook(微博版)");
 		accountTypeData.add("13-Facebook(国际版)");
+		accountTypeData.add("14-豌豆荚版");
 
 		armyOutMethodData.add("默认出兵采集野矿");
 		armyOutMethodData.add("最后一队最大出兵");
@@ -71,7 +72,7 @@ public class DataConstant
 		{
 			gatherDistanceData.add(i + " km");
 		}
-		
+
 		versionData.add("版本号2.0.12");
 		versionData.add("版本号2.0.13--2.0.17");
 		versionData.add("版本号2.0.18--2.5.0");
@@ -88,13 +89,18 @@ public class DataConstant
 		upgradeTechData.add("专升城防");
 		upgradeTechData.add("专升军事");
 		upgradeTechData.add("专升装备");
+		upgradeTechData.add("专升高级军事");
+		upgradeTechData.add("专升医疗");
+		upgradeTechData.add("专升精锐部队");
 
 		upgradeBuildingData.add("学院");
 		upgradeBuildingData.add("校场");
 		upgradeBuildingData.add("行军帐篷");
 		upgradeBuildingData.add("急救帐篷");
 		upgradeBuildingData.add("木粮铁银");
-		//upgradeBuildingData.add("大使馆");
+		upgradeBuildingData.add("大使馆");
+		upgradeBuildingData.add("许愿池");
+		upgradeBuildingData.add("车兵营");
 
 		castleInAlliasData.add("城堡不在盟区内");
 		castleInAlliasData.add("城堡在盟区内");
@@ -102,68 +108,69 @@ public class DataConstant
 
 	public String[] getAccountTypeData()
 	{
-		return accountTypeData.toArray(
-				new String[] {});
+		return accountTypeData.toArray(new String[] {});
 	}
 
 	public String[] getArmyOutMethodData()
 	{
-		return armyOutMethodData.toArray(
-				new String[] {});
+		return armyOutMethodData.toArray(new String[] {});
+	}
+
+	public String[] getSubAccountTypeData()
+	{
+		String[] result = new String[accountTypeData.size()];
+		for (int i = 0; i < accountTypeData.size(); i++)
+		{
+			String data = accountTypeData.get(i);
+			String type = data.split("-")[1];
+			result[i] = type;
+		}
+		return result;
 	}
 
 	public String[] getGatherAlliasMethodData()
 	{
-		return gatherAlliasMethodData.toArray(
-				new String[] {});
+		return gatherAlliasMethodData.toArray(new String[] {});
 	}
 
 	public String[] getGatherAlliasTypeData()
 	{
-		return gatherAlliasTypeData.toArray(
-				new String[] {});
+		return gatherAlliasTypeData.toArray(new String[] {});
 	}
 
 	public String[] getArmyOutNumData()
 	{
-		return armyOutNumData.toArray(
-				new String[] {});
+		return armyOutNumData.toArray(new String[] {});
 	}
 
 	public String[] getGatherDistanceData()
 	{
-		return gatherDistanceData.toArray(
-				new String[] {});
+		return gatherDistanceData.toArray(new String[] {});
 	}
 
 	public String[] getVersionData()
 	{
-		return versionData.toArray(
-				new String[] {});
+		return versionData.toArray(new String[] {});
 	}
 
 	public String[] getGroupInfoData()
 	{
-		return groupInfoData.toArray(
-				new String[] {});
+		return groupInfoData.toArray(new String[] {});
 	}
 
 	public String[] getUpgradeTechData()
 	{
-		return upgradeTechData.toArray(
-				new String[] {});
+		return upgradeTechData.toArray(new String[] {});
 	}
 
 	public String[] getUpgradeBuildingData()
 	{
-		return upgradeBuildingData.toArray(
-				new String[] {});
+		return upgradeBuildingData.toArray(new String[] {});
 	}
 
 	public String[] getCastleInAlliasData()
 	{
-		return castleInAlliasData.toArray(
-				new String[] {});
+		return castleInAlliasData.toArray(new String[] {});
 	}
-	
+
 }

@@ -66,6 +66,7 @@ public class AccountInfoBean
 
 	public void setVersion(int version)
 	{
+		version = version < 0 ? 0 : version;
 		this.version = version;
 	}
 
@@ -76,6 +77,7 @@ public class AccountInfoBean
 
 	public void setVersionType(int versionType)
 	{
+		versionType = versionType < 0 ? 0 : versionType;
 		this.versionType = versionType;
 	}
 

@@ -1,6 +1,7 @@
 package com.superbus.cok.tools.utils;
 
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.MessageBox;
 import org.eclipse.swt.widgets.Shell;
 
@@ -9,6 +10,10 @@ public class MessageUtil
 	private static void showDialog(Shell shell, int style, String text,
 			String message)
 	{
+		if (shell == null)
+		{
+			shell = Display.getDefault().getShells()[0];
+		}
 		MessageBox box = new MessageBox(shell, style);
 		box.setText(text);
 		box.setMessage(message);

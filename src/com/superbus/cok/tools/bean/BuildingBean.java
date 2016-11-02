@@ -37,6 +37,7 @@ public class BuildingBean
 
 	public void setBuildingType(int buildingType)
 	{
+		buildingType = buildingType < 0 ? 0 : buildingType;
 		this.buildingType = buildingType;
 	}
 

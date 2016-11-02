@@ -24,19 +24,43 @@ public class HttpUtil
 
 	public static void main(String[] args) throws Exception
 	{
-		System.err.println(queryAccount(testKey));
+		System.err.println(download("3A9B4AAF57E9EA6258F6B9F07BE94025"));
+	}
+
+	public static List<StatisticsBean> queryAccount(String key)
+	{
+		return transferStatisticsResult(http("queryAccount", key));
 	}
 	
-	public static List<StatisticsBean> queryAccount(String key)
+	public static String upload(String key, String content)
+	{
+		return http("uploadcloud", key, content);
+	}
+	
+	public static String download(String key)
+	{
+		return http("downcloud", key);
+	}
+
+	private static String http(String method, String key)
+	{
+		return http(method, key, null);
+	}
+
+	private static String http(String method, String key, String datas)
 	{
 		Map<String, String> map = new HashMap<String, String>();
 		map.put("token", token);
-		map.put("method", "queryAccount");
+		map.put("method", method);
 		map.put("regcode", key);
-		return transferStatisticsResult(http(url, map));
+		if (datas != null)
+		{
+			map.put("datas", datas);
+		}
+		return http(url, map);
 	}
 
-	public static String http(String url, Map<String, String> params)
+	private static String http(String url, Map<String, String> params)
 	{
 		URL u = null;
 		HttpURLConnection con = null;
@@ -55,10 +79,6 @@ public class HttpUtil
 			}
 			paramResult = sb.substring(0, sb.length() - 1);
 		}
-		System.out.println("send_url:" + url);
-		System.out.println("send_data:" + paramResult);
-		// paramResult =
-		// "token=dc27b994292d83cda09a9695f7c719f5&funparams=getTime";
 
 		// 尝试发送请求
 		try
@@ -87,6 +107,10 @@ public class HttpUtil
 				con.disconnect();
 			}
 		}
+		if (con == null)
+		{
+			return "";
+		}
 		// 读取返回内容
 		StringBuffer buffer = new StringBuffer();
 		try
@@ -106,12 +130,6 @@ public class HttpUtil
 		return buffer.toString();
 	}
 
-	private static String transferDownloadResult(String result)
-	{
-		return result.replace("_", "%").replace("%30", "#").replace("%40", "*")
-				.replace("%124", "|").replace("%20", " ");
-	}
-
 	private static List<StatisticsBean> transferStatisticsResult(String result)
 	{
 		List<StatisticsBean> accList = new ArrayList<StatisticsBean>();
@@ -120,7 +138,7 @@ public class HttpUtil
 		{
 			account = account.replaceAll("~", ",");
 			JSONObject jsonObject = JSONObject.parseObject(account);
-			if(jsonObject == null)
+			if (jsonObject == null)
 			{
 				continue;
 			}

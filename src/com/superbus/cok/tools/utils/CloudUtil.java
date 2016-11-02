@@ -49,23 +49,14 @@ public class CloudUtil
 
 	public static String download(String key) throws Exception
 	{
-		URL url = new URL(
-				"http://post.baibaoyun.com/cloudapi/cloudappapi?token=" + token
-						+ "&funparams=upload2" + key + "");
-		String result = getReturnRslt(url);
-		result = result.replace("_", "%").replace("%30", "#").replace("%40", "*")
-                .replace("%124", "|").replace("%20", " ");
+		String result = HttpUtil.download(key);//getReturnRslt(url);
 		return result;
 	}
 
 	public static String upload(String key, String content) throws Exception
 	{
-		content = content.trim().replace("|", "%124").replace(" ", "%20").replace("#", "%30").replace("*", "%40")
-                .replace("%", "_");
-		URL url = new URL(
-				"http://post.baibaoyun.com/cloudapi/cloudappapi?token=" + token
-						+ "&funparams=upload1" + key + "" + content);
-		return getReturnRslt(url);
+		String result = HttpUtil.upload(key, content);
+		return result;
 	}
 
 	public static String getBBYTime() throws Exception
@@ -78,6 +69,10 @@ public class CloudUtil
 
 	private static String getReturnRslt(URL url)
 	{
+		if(url == null)
+		{
+			return null;
+		}
 		HttpURLConnection connection = null;
 		InputStreamReader isr = null;
 		BufferedReader reader = null;

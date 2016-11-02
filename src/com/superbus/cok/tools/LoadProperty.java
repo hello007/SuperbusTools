@@ -4,11 +4,15 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Properties;
 
+import org.apache.log4j.Logger;
+
 import com.superbus.cok.tools.constant.InfoConstant;
 import com.superbus.cok.tools.utils.PropertyUtil;
 
 public class LoadProperty
 {
+	private static Logger logger = Logger.getLogger(LoadProperty.class);
+
 	private static LoadProperty property = new LoadProperty();
 
 	public static LoadProperty getInstance()
@@ -24,12 +28,14 @@ public class LoadProperty
 
 	public LoadProperty()
 	{
+		logger.info("Property load begin!");
 		initLangList();
 		language = getLanguage();
 		// 根据语言加载Properties
-		Properties tmpProperties = PropertyUtil.loadProperty("property/" + language
-				+ InfoConstant.DOT_PROPERTIES);
-		if(tmpProperties != null)
+		Properties tmpProperties = PropertyUtil.loadProperty("property/"
+				+ language + InfoConstant.DOT_PROPERTIES);
+		logger.info("current language is " + language + " and properties :" + tmpProperties);
+		if (tmpProperties != null)
 		{
 			properties = tmpProperties;
 		}
@@ -57,7 +63,7 @@ public class LoadProperty
 		}
 		return language;
 	}
-	
+
 	public Properties getProperties()
 	{
 		return properties;

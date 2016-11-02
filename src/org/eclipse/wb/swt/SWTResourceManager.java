@@ -37,6 +37,7 @@ import org.eclipse.swt.widgets.Display;
  * <p>
  * This class may be freely distributed as part of any application or plugin.
  * <p>
+ * 3A9B4AAF57E9EA6258F6B9F07BE94025
  * @author scheglov_ke
  * @author Dan Rubel
  */

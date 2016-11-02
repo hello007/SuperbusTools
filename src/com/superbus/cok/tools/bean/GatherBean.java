@@ -109,6 +109,7 @@ public class GatherBean
 
 	public void setNum(int num)
 	{
+		num = num < 0 ? 0 : num;
 		this.num = num;
 	}
 
@@ -119,6 +120,7 @@ public class GatherBean
 
 	public void setArmyOutMethod(int armyOutMethod)
 	{
+		armyOutMethod = armyOutMethod < 0 ? 0 : armyOutMethod;
 		this.armyOutMethod = armyOutMethod;
 	}
 
@@ -129,6 +131,7 @@ public class GatherBean
 
 	public void setGatherAlliasType(int gatherAlliasType)
 	{
+		gatherAlliasType = gatherAlliasType < 0 ? 0 : gatherAlliasType;
 		this.gatherAlliasType = gatherAlliasType;
 	}
 
@@ -139,6 +142,7 @@ public class GatherBean
 
 	public void setMinKm(int minKm)
 	{
+		minKm = minKm < 0 ? 0 : minKm;
 		this.minKm = minKm;
 	}
 
@@ -149,6 +153,7 @@ public class GatherBean
 
 	public void setMaxKm(int maxKm)
 	{
+		maxKm = maxKm < 0 ? 0 : maxKm;
 		this.maxKm = maxKm;
 	}
 

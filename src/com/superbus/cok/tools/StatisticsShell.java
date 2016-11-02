@@ -27,6 +27,7 @@ import org.eclipse.swt.widgets.TableColumn;
 import org.eclipse.swt.widgets.Text;
 
 import com.superbus.cok.tools.bean.StatisticsBean;
+import com.superbus.cok.tools.utils.DateUtil;
 import com.superbus.cok.tools.utils.HttpUtil;
 import com.superbus.cok.tools.utils.MessageUtil;
 
@@ -73,7 +74,15 @@ public class StatisticsShell extends Shell
 		//initData("55A11A31E81A96EDD3D9E350974FFBA5");
 	}
 	
+	public StatisticsShell(Shell shell, int style)
+	{
+		super(shell, style);
+		createContents();
+	}
+	
+	
 	private String currentKey = null;
+	Composite resourceComposite;
 
 	/**
 	 * Create contents of the shell.
@@ -97,27 +106,12 @@ public class StatisticsShell extends Shell
 		infoBasic.setControl(composite);
 		createBasic(composite);
 
-		saveButton = new Button(composite, SWT.NONE);
-		saveButton.setBounds(661, 77, 84, 30);
-		saveButton.setText("保存展示");
-		saveButton.addMouseListener(saveListener);
-
-		allUnselectButton = new Button(composite, SWT.NONE);
-		allUnselectButton.setBounds(661, 44, 84, 30);
-		allUnselectButton.setText("反向选择");
-		allUnselectButton.addMouseListener(selectListener);
-
-		allSelectButton = new Button(composite, SWT.NONE);
-		allSelectButton.setBounds(661, 10, 84, 30);
-		allSelectButton.setText("全部选中");
-		allSelectButton.addMouseListener(selectListener);
-
 		TabItem infoResource = new TabItem(tabFolder, SWT.NONE);
 		infoResource.setText("资源信息");
 
-		Composite composite_1 = new Composite(tabFolder, SWT.NONE);
-		infoResource.setControl(composite_1);
-		createResource(composite_1);
+		resourceComposite = new Composite(tabFolder, SWT.NONE);
+		infoResource.setControl(resourceComposite);
+		createResource(resourceComposite);
 
 		TabItem infoQueue = new TabItem(tabFolder, SWT.NONE);
 		infoQueue.setText("队列信息");
@@ -138,18 +132,18 @@ public class StatisticsShell extends Shell
 
 	Button check顺序, check账号, check密码, check平台, check版本, check领主名, check领主等级,
 			check城堡等级, check金币, checkVIP等级, checkVIP状态, check王国, check坐标,
-			check战力, check兵数, check城防;
+			check战力, check兵数, check城防, check刷新时间;
 
 	String[] checkButtonNames = new String[] { "顺序", "账号", "密码", "平台", "版本",
 			"领主名", "领主等级", "城堡等级", "金币", "vip等级", "vip状态", "王国", "坐标", "战力",
-			"兵数", "城防" };
+			"兵数", "城防", "刷新时间" };
 
 	Button[] checkButtons = new Button[] { check顺序, check账号, check密码, check平台,
 			check版本, check领主名, check领主等级, check城堡等级, check金币, checkVIP等级,
-			checkVIP状态, check王国, check坐标, check战力, check兵数, check城防 };
+			checkVIP状态, check王国, check坐标, check战力, check兵数, check城防, check刷新时间 };
 
 	int[] widths = new int[] { 50, 150, 150, 100, 100, 100, 100, 100, 100, 100,
-			100, 50, 100, 100, 100, 100 };
+			100, 50, 100, 100, 100, 100, 200 };
 
 	Text clientPathText, serverPathText, exportPathText;
 	Button clientPathButton, serverPathButton, exportPathButton;
@@ -158,6 +152,21 @@ public class StatisticsShell extends Shell
 
 	private void createBasic(Composite composite)
 	{
+		saveButton = new Button(composite, SWT.NONE);
+		saveButton.setBounds(661, 77, 84, 30);
+		saveButton.setText("保存展示");
+		saveButton.addMouseListener(saveListener);
+
+		allUnselectButton = new Button(composite, SWT.NONE);
+		allUnselectButton.setBounds(661, 44, 84, 30);
+		allUnselectButton.setText("反向选择");
+		allUnselectButton.addMouseListener(selectListener);
+
+		allSelectButton = new Button(composite, SWT.NONE);
+		allSelectButton.setBounds(661, 10, 84, 30);
+		allSelectButton.setText("全部选中");
+		allSelectButton.addMouseListener(selectListener);
+
 		Group group = new Group(composite, SWT.NONE);
 		group.setText("显示信息");
 		group.setBounds(5, 0, 650, 107);
@@ -182,7 +191,6 @@ public class StatisticsShell extends Shell
 			{
 				x += 90;
 			}
-
 		}
 
 		tableComposite = new Composite(composite, SWT.NONE);
@@ -190,9 +198,10 @@ public class StatisticsShell extends Shell
 		createTableComposite(tableComposite);
 	}
 
-	private TableViewer tableViewer;
-	private Table table;
-	int tableRow = 0;
+	private TableViewer basicTableViewer, resourceTableViewer,
+			queueTableViewer;
+	private Table basicTable, resourceTable, queueTable;
+	int tableRow = 0, resourceRow = 0;
 	private Text cardText;
 	private Button searchButton, saveButton, allSelectButton;
 	/**
@@ -203,15 +212,16 @@ public class StatisticsShell extends Shell
 	private void createTableComposite(Composite tableComposite)
 	{
 		tableComposite.setLayout(new FillLayout());
-		tableViewer = new TableViewer(tableComposite, SWT.MULTI
+		basicTableViewer = new TableViewer(tableComposite, SWT.SINGLE
 				| SWT.FULL_SELECTION | SWT.BORDER | SWT.V_SCROLL | SWT.H_SCROLL);
 
-		table = tableViewer.getTable();
-		table.setLinesVisible(true);
-		table.setHeaderVisible(true);
-		table.setSize(tableComposite.getSize());
+		basicTable = basicTableViewer.getTable();
+		basicTable.setLinesVisible(true);
+		basicTable.setHeaderVisible(true);
+		basicTable.setSize(tableComposite.getSize());
 
-		TableColumn newColumnTableColumn = new TableColumn(table, SWT.CENTER);
+		TableColumn newColumnTableColumn = new TableColumn(basicTable,
+				SWT.CENTER);
 		newColumnTableColumn.setWidth(50);
 		newColumnTableColumn.setText("行号");
 
@@ -220,23 +230,22 @@ public class StatisticsShell extends Shell
 			Button button = checkButtons[i];
 			if (button.getSelection())
 			{
-				TableColumn newColumnTableColumn_1 = new TableColumn(table,
-						SWT.CENTER);
+				TableColumn newColumnTableColumn_1 = new TableColumn(
+						basicTable, SWT.CENTER);
 				newColumnTableColumn_1.setWidth(widths[i]);
 				newColumnTableColumn_1.setText(checkButtonNames[i]);
 			}
 		}
 
 		// 设置内容器
-		tableViewer.setContentProvider(new ContentProvider());
+		basicTableViewer.setContentProvider(new BasicProvider());
 		// // 设置标签器
-		tableViewer.setLabelProvider(new TableLabelProvider());
-		// 把数据集合给tableView
+		basicTableViewer.setLabelProvider(new BasicLabelProvider());
 	}
-	
+
 	public void initData(String key)
 	{
-		if(key == null || key.trim().length() != 32)
+		if (key == null || key.trim().length() != 32)
 		{
 			MessageUtil.showErrorDialog(StatisticsShell.this, "提示",
 					"卡号不合法，请检查后重试");
@@ -250,12 +259,39 @@ public class StatisticsShell extends Shell
 	private void initData(List<StatisticsBean> listBeans)
 	{
 		this.listBeans = listBeans;
-		changeTableData();
+		changeBasicTableData();
 	}
+
+	String[] resourceNames = new String[] { "账号", "总木/安全木", "总粮/安全粮", "总铁/安全铁",
+			"总银/安全银", "刷新时间" };
 
 	private void createResource(Composite composite)
 	{
+		composite.setLayout(new FillLayout(SWT.HORIZONTAL));
+		resourceTableViewer = new TableViewer(composite, SWT.SINGLE
+				| SWT.FULL_SELECTION | SWT.BORDER | SWT.V_SCROLL | SWT.H_SCROLL);
+		resourceTable = resourceTableViewer.getTable();
+		resourceTable.setLinesVisible(true);
+		resourceTable.setHeaderVisible(true);
+		resourceTable.setSize(composite.getSize());
 
+		TableColumn newColumnTableColumn = new TableColumn(resourceTable,
+				SWT.CENTER);
+		newColumnTableColumn.setWidth(50);
+		newColumnTableColumn.setText("行号");
+
+		for (int i = 0; i < resourceNames.length; i++)
+		{
+			TableColumn newColumnTableColumn_1 = new TableColumn(resourceTable,
+					SWT.CENTER);
+			newColumnTableColumn_1.setWidth(150);
+			newColumnTableColumn_1.setText(resourceNames[i]);
+		}
+
+		// 设置内容器
+		resourceTableViewer.setContentProvider(new ResourceProvider());
+		// // 设置标签器
+		resourceTableViewer.setLabelProvider(new ResourceLabelProvider());
 	}
 
 	private void createQueue(Composite composite)
@@ -268,7 +304,148 @@ public class StatisticsShell extends Shell
 	{
 	}
 
-	public class ContentProvider implements IStructuredContentProvider
+	public class BasicProvider implements IStructuredContentProvider
+	{
+		@SuppressWarnings("unchecked")
+		public Object[] getElements(Object inputElement)
+		{
+			if (inputElement instanceof List)
+			{
+				List<StatisticsBean> listBeans = (List<StatisticsBean>) inputElement;
+				List<List<String>> beanList = new ArrayList<List<String>>();
+				for (StatisticsBean bean : listBeans)
+				{
+					List<String> list = new ArrayList<String>();
+					for (int i = 0; i < checkButtons.length; i++)
+					{
+						Button button = checkButtons[i];
+						if (button.getSelection())
+						{
+							String key = checkButtonNames[i];
+							if (key != null && key.trim().equals("刷新时间"))
+							{
+								String value = bean.getMap().get("本地时间");
+								if (value != null && !value.trim().equals(""))
+								{
+									value = DateUtil.formatUnixTime(Long
+											.parseLong(value));
+								} else
+								{
+									value = "暂无";
+								}
+								list.add(value);
+								continue;
+							}
+							String value = bean.getMap().get(key);
+							if (value == null || value.trim().equals(""))
+							{
+								value = "暂无";
+							}
+							if ("城防".equals(key))
+							{
+								if (value != null)
+								{
+									value = value.replaceAll(",", "");
+								}
+							}
+							list.add(value);
+						}
+					}
+					beanList.add(list);
+				}
+				return beanList.toArray();
+			} else
+			{
+				return new Object[0];
+			}
+		}
+
+		public void dispose()
+		{
+		}
+
+		public void inputChanged(Viewer viewer, Object oldInput, Object newInput)
+		{
+		}
+	}
+
+	public class ResourceProvider implements IStructuredContentProvider
+	{
+		@SuppressWarnings("unchecked")
+		public Object[] getElements(Object inputElement)
+		{
+			if (inputElement instanceof List)
+			{
+				List<StatisticsBean> listBeans = (List<StatisticsBean>) inputElement;
+				List<List<String>> beanList = new ArrayList<List<String>>();
+
+				for (StatisticsBean bean : listBeans)
+				{
+					List<String> list = new ArrayList<String>();
+					for (int i = 0; i < resourceNames.length; i++)
+					{
+						String name = resourceNames[i];
+						if (name.indexOf("/") > 0)
+						{
+							String[] two = name.split("/");
+							StringBuffer result = new StringBuffer();
+							for (int j = 0; j < two.length; j++)
+							{
+								String value = bean.getMap().get(two[j]);
+								if(value == null || value.trim().equals(""))
+								{
+									value = "暂无";
+								}
+								result.append(value);
+								if(j != two.length - 1)
+								{
+									result.append("/");
+								}
+							}
+							list.add(result.toString());
+						} else
+						{
+							if("刷新时间".equals(name))
+							{
+								name = "本地时间";
+								String value = bean.getMap().get(name);
+								if(value == null || value.trim().equals(""))
+								{
+									value = "暂无";
+								}else
+								{
+									value = DateUtil.formatUnixTime(Long.parseLong(value));
+								}
+								list.add(value);
+								continue;
+							}
+							String value = bean.getMap().get(name);
+							if (value == null || value.trim().equals(""))
+							{
+								value = "暂无";
+							}
+							list.add(value);
+						}
+					}
+					beanList.add(list);
+				}
+				return beanList.toArray();
+			} else
+			{
+				return new Object[0];
+			}
+		}
+
+		public void dispose()
+		{
+		}
+
+		public void inputChanged(Viewer viewer, Object oldInput, Object newInput)
+		{
+		}
+	}
+
+	public class QueueProvider implements IStructuredContentProvider
 	{
 		@SuppressWarnings("unchecked")
 		public Object[] getElements(Object inputElement)
@@ -316,7 +493,7 @@ public class StatisticsShell extends Shell
 		}
 	}
 
-	public class TableLabelProvider implements ITableLabelProvider
+	public class QueueLabelProvider implements ITableLabelProvider
 	{
 		public String getColumnText(Object element, int columnIndex)
 		{
@@ -324,7 +501,7 @@ public class StatisticsShell extends Shell
 			{
 				@SuppressWarnings("unchecked")
 				List<String> bean = (List<String>) element;
-				if(bean != null && bean.size() <= 0)
+				if (bean != null && bean.size() <= 0)
 				{
 					return null;
 				}
@@ -369,18 +546,135 @@ public class StatisticsShell extends Shell
 
 		}
 	}
-	
-	private void changeTableData()
+
+	public class ResourceLabelProvider implements ITableLabelProvider
 	{
-		for (Control control : tableComposite.getChildren())
+		public String getColumnText(Object element, int columnIndex)
 		{
-			control.dispose();
+			if (element instanceof List<?>)
+			{
+				@SuppressWarnings("unchecked")
+				List<String> bean = (List<String>) element;
+				if (bean != null && bean.size() <= 0)
+				{
+					return null;
+				}
+				if (columnIndex == 0)
+				{
+					resourceRow++;
+					return resourceRow + "";
+				} else
+				{
+					return bean.get(columnIndex - 1);
+				}
+			}
+			return null;
 		}
+
+		public Image getColumnImage(Object element, int columnIndex)
+		{
+			return null;
+		}
+
+		@Override
+		public void addListener(ILabelProviderListener arg0)
+		{
+
+		}
+
+		@Override
+		public void dispose()
+		{
+
+		}
+
+		@Override
+		public boolean isLabelProperty(Object arg0, String arg1)
+		{
+			return false;
+		}
+
+		@Override
+		public void removeListener(ILabelProviderListener arg0)
+		{
+
+		}
+	}
+
+	public class BasicLabelProvider implements ITableLabelProvider
+	{
+		public String getColumnText(Object element, int columnIndex)
+		{
+			if (element instanceof List<?>)
+			{
+				@SuppressWarnings("unchecked")
+				List<String> bean = (List<String>) element;
+				if (bean != null && bean.size() <= 0)
+				{
+					return null;
+				}
+				if (columnIndex == 0)
+				{
+					tableRow++;
+					return tableRow + "";
+				} else
+				{
+					return bean.get(columnIndex - 1);
+				}
+			}
+			return null;
+		}
+
+		public Image getColumnImage(Object element, int columnIndex)
+		{
+			return null;
+		}
+
+		@Override
+		public void addListener(ILabelProviderListener arg0)
+		{
+
+		}
+
+		@Override
+		public void dispose()
+		{
+
+		}
+
+		@Override
+		public boolean isLabelProperty(Object arg0, String arg1)
+		{
+			return false;
+		}
+
+		@Override
+		public void removeListener(ILabelProviderListener arg0)
+		{
+
+		}
+	}
+
+	private void changeBasicTableData()
+	{
+		disposeChildControl(tableComposite);
+		disposeChildControl(resourceComposite);
 		createTableComposite(tableComposite);
+		createResource(resourceComposite);
 		tableRow = 0;
+		resourceRow = 0;
 		if (listBeans != null)
 		{
-			tableViewer.setInput(listBeans);
+			basicTableViewer.setInput(listBeans);
+			resourceTableViewer.setInput(listBeans);
+		}
+	}
+
+	private void disposeChildControl(Composite composite)
+	{
+		for (Control control : composite.getChildren())
+		{
+			control.dispose();
 		}
 	}
 
@@ -402,13 +696,14 @@ public class StatisticsShell extends Shell
 						"卡号不合法，请检查后重试");
 				return;
 			}
-			if(card.trim().equals(currentKey))
+			if (card.trim().equals(currentKey))
 			{
-				changeTableData();
+				changeBasicTableData();
 				return;
 			}
 			card = card.toUpperCase();
-			initData(card);;
+			initData(card);
+			;
 		}
 	};
 
@@ -420,7 +715,7 @@ public class StatisticsShell extends Shell
 		{
 			if (e.button == 1)
 			{
-				changeTableData();
+				changeBasicTableData();
 			}
 		}
 	};

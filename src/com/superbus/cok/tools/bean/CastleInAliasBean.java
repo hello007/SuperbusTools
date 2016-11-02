@@ -23,6 +23,7 @@ public class CastleInAliasBean
 
 	public void setIn(int in)
 	{
+		in = in < 0 ? 0 : in;
 		this.in = in;
 	}
 

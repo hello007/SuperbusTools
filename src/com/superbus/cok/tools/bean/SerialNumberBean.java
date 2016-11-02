@@ -27,9 +27,9 @@ public class SerialNumberBean
 	public String toString()
 	{
 		StringBuffer sb = new StringBuffer();
-		for (Map.Entry<String, AccountInfoBean> entry : map.entrySet())
+		for (String id : idQueue)
 		{
-			AccountInfoBean bean = entry.getValue();
+			AccountInfoBean bean = map.get(id);
 			sb.append(bean + DataConvertUtil.SPACE_SPLIT);
 		}
 		return sb.toString().trim();

@@ -31,6 +31,7 @@ public class GroupBean
 
 	public void setGroupNum(int groupNum)
 	{
+		groupNum = groupNum < 0 ? 0 : groupNum;
 		this.groupNum = groupNum;
 	}
 

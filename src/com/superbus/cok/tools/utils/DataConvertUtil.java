@@ -145,7 +145,7 @@ public class DataConvertUtil
 		if (length == 2)
 		{
 			bean.setBuidling(StringTools.convertToBoolean(getNum(data[0]) + ""));
-			bean.setBuildingType(getNum(data[1], 5));
+			bean.setBuildingType(getNum(data[1], 9));
 		}
 		return bean;
 	}
@@ -160,7 +160,7 @@ public class DataConvertUtil
 		if (length == 2)
 		{
 			techBean.setTech(StringTools.convertToBoolean(getNum(data[0]) + ""));
-			techBean.setTechType(getNum(data[1], 5));
+			techBean.setTechType(getNum(data[1], 9));
 		}
 		return techBean;
 	}
