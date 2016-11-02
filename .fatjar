@@ -1,0 +1,14 @@
+#Fat Jar Configuration File
+#Sat Oct 29 23:08:18 CST 2016
+onejar.license.required=false
+manifest.classpath=
+manifest.removesigners=true
+onejar.checkbox=true
+jarname=superbus.jar
+manifest.mergeall=true
+manifest.mainclass=com.superbus.cok.tools.Main
+manifest.file=<createnew>
+jarname.isextern=false
+onejar.expand=
+excludes=
+includes=
