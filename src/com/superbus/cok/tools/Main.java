@@ -108,6 +108,8 @@ public class Main
 
 		shell.setLocation(display.getClientArea().width / 2 - shell.getSize().x
 				/ 2, display.getClientArea().height / 2 - shell.getSize().y / 2);
+		
+		
 		shell.open();
 		shell.layout();
 		while (!shell.isDisposed())
@@ -410,28 +412,32 @@ public class Main
 	protected void createContents()
 	{
 		shell = new Shell();
-		shell.setSize(855, 610);
+		shell.setSize(855, 630);
 		shell.setText("巴士辅助window配置器");
 
-		accList = new org.eclipse.swt.widgets.List(shell, SWT.BORDER
-				| SWT.H_SCROLL | SWT.V_SCROLL | SWT.SINGLE);
-		accList.setBounds(10, 63, 203, 490);
-
 		userInfoComposite = new Composite(shell, SWT.NONE);
-		userInfoComposite.setBounds(219, 63, 616, 418);
+		userInfoComposite.setBounds(219, 85, 616, 418);
 
 		normalComposite = new Composite(shell, SWT.NONE);
-		normalComposite.setBounds(219, 489, 616, 64);
+		normalComposite.setBounds(219, 509, 616, 64);
 
 		taobaoComposite = new Composite(shell, SWT.BORDER);
 		taobaoComposite.setFont(SWTResourceManager.getFont(
 				"Microsoft YaHei UI", 12, SWT.NORMAL));
-		taobaoComposite.setBounds(10, 10, 825, 46);
+		taobaoComposite.setBounds(10, 10, 825, 69);
 
 		createTaoBaoComposite();
 		createUserInfoComposite();
 		createNormalComposite();
 
+		group_2 = new Group(shell, SWT.NONE);
+		group_2.setText("账号信息列表");
+		group_2.setBounds(10, 85, 203, 488);
+
+		accList = new org.eclipse.swt.widgets.List(group_2, SWT.BORDER
+				| SWT.H_SCROLL | SWT.V_SCROLL | SWT.SINGLE);
+		accList.setLocation(5, 22);
+		accList.setSize(193, 460);
 	}
 
 	Button checkBtn显示所有账号;
@@ -704,33 +710,40 @@ public class Main
 	private void createTaoBaoComposite()
 	{
 		label序列号 = new Label(taobaoComposite, SWT.WRAP | SWT.CENTER);
-		label序列号.setBounds(10, 13, 66, 20);
-		label序列号.setText("序列号");
+		label序列号.setBounds(0, 32, 66, 20);
+		label序列号.setText("卡号");
 
 		text序列号 = new Text(taobaoComposite, SWT.BORDER);
-		text序列号.setText("55A11A31E81A96EDD3D9E350974FFBA5");
-		text序列号.setBounds(82, 10, 249, 26);
+//		text序列号.setText("55A11A31E81A96EDD3D9E350974FFBA5");
+		text序列号.setBounds(72, 29, 249, 26);
 
 		link淘宝 = new Link(taobaoComposite, SWT.NONE);
-		link淘宝.setBounds(497, 12, 86, 26);
+		link淘宝.setBounds(553, 29, 86, 26);
 		// 用A来标记超链接区域
 		link淘宝.setText("<A>淘宝地址</A>");
 
 		buttonQQ群 = new Button(taobaoComposite, SWT.NONE);
-		buttonQQ群.setBounds(589, 8, 80, 30);
+		buttonQQ群.setBounds(645, 25, 80, 30);
 		buttonQQ群.setText("QQ群");
 
 		button设置 = new Button(taobaoComposite, SWT.NONE);
-		button设置.setBounds(675, 8, 80, 30);
+		button设置.setBounds(731, 25, 80, 30);
 		button设置.setText("设置");
-
-		button上传 = new Button(taobaoComposite, SWT.NONE);
-		button上传.setBounds(337, 8, 66, 30);
-		button上传.setText("上传");
-
-		button下载 = new Button(taobaoComposite, SWT.NONE);
-		button下载.setBounds(409, 8, 66, 30);
-		button下载.setText("下载");
+		
+		Group group = new Group(taobaoComposite, SWT.NONE);
+		group.setText("配置信息上传及下载");
+		group.setBounds(333, 0, 200, 65);
+		
+				button上传 = new Button(group, SWT.NONE);
+				button上传.setBounds(10, 25, 66, 30);
+				button上传.setText("上传");
+				
+						button下载 = new Button(group, SWT.NONE);
+						button下载.setLocation(97, 25);
+						button下载.setSize(66, 30);
+						button下载.setText("下载");
+						button下载.addSelectionListener(selectionAdapter);
+				button上传.addSelectionListener(selectionAdapter);
 
 		text序列号.addModifyListener(new ModifyListener()
 		{
@@ -743,8 +756,6 @@ public class Main
 
 		link淘宝.addSelectionListener(selectionAdapter);
 		buttonQQ群.addSelectionListener(selectionAdapter);
-		button上传.addSelectionListener(selectionAdapter);
-		button下载.addSelectionListener(selectionAdapter);
 
 	}
 
@@ -995,6 +1006,7 @@ public class Main
 		}
 	};
 	private Button button账号编辑;
+	private Group group_2;
 
 	private String getContent()
 	{

@@ -484,19 +484,19 @@ public class GroupShell extends Shell
 						}
 					} else if (GROUP_TWO.equals(groupInfo))
 					{
-						int twoMin = comboTwoMin.getSelectionIndex();
-						int twoMax = comboTwoMax.getSelectionIndex();
-						int twoX = getInt(textTwoX.getText());
-						int twoY = getInt(textTwoY.getText());
-						if (twoX <= 0 || twoY <= 0)
-						{
-							MessageUtil.showErrorDialog(GroupShell.this, "错误",
-									"分组二设置坐标不合法，请检查后保存");
-							return;
-						}
 
 						try
 						{
+							int twoMin = comboTwoMin.getSelectionIndex();
+							int twoMax = comboTwoMax.getSelectionIndex();
+							int twoX = getInt(textTwoX.getText());
+							int twoY = getInt(textTwoY.getText());
+							if (twoX <= 0 || twoY <= 0)
+							{
+								MessageUtil.showErrorDialog(GroupShell.this, "错误",
+										"分组二设置坐标不合法，请检查后保存");
+								return;
+							}
 							bean.getGatherBean().setMinKm(twoMin);
 							bean.getGatherBean().setMaxKm(twoMax);
 							bean.getGroupBean().setDefinReseach(true);
@@ -511,19 +511,19 @@ public class GroupShell extends Shell
 						}
 					} else if (GROUP_THREE.equals(groupInfo))
 					{
-						int threeMin = comboThreeMin.getSelectionIndex();
-						int threeMax = comboThreeMax.getSelectionIndex();
-						int threeX = getInt(textThreeX.getText());
-						int threeY = getInt(textThreeY.getText());
-						if (threeX <= 0 || threeY <= 0)
-						{
-							MessageUtil.showErrorDialog(GroupShell.this, "错误",
-									"分组三设置坐标不合法，请检查后保存");
-							return;
-						}
 
 						try
 						{
+							int threeMin = comboThreeMin.getSelectionIndex();
+							int threeMax = comboThreeMax.getSelectionIndex();
+							int threeX = getInt(textThreeX.getText());
+							int threeY = getInt(textThreeY.getText());
+							if (threeX <= 0 || threeY <= 0)
+							{
+								MessageUtil.showErrorDialog(GroupShell.this, "错误",
+										"分组三设置坐标不合法，请检查后保存");
+								return;
+							}
 							bean.getGatherBean().setMinKm(threeMin);
 							bean.getGatherBean().setMaxKm(threeMax);
 							bean.getGroupBean().setDefinReseach(true);
@@ -538,19 +538,19 @@ public class GroupShell extends Shell
 						}
 					} else if (GROUP_FOUR.equals(groupInfo))
 					{
-						int fourMin = comboFourMin.getSelectionIndex();
-						int fourMax = comboFourMax.getSelectionIndex();
-						int fourX = getInt(textFourX.getText());
-						int fourY = getInt(textFourY.getText());
-						if (fourX <= 0 || fourY <= 0)
-						{
-							MessageUtil.showErrorDialog(GroupShell.this, "错误",
-									"分组四设置坐标不合法，请检查后保存");
-							return;
-						}
 
 						try
 						{
+							int fourMin = comboFourMin.getSelectionIndex();
+							int fourMax = comboFourMax.getSelectionIndex();
+							int fourX = getInt(textFourX.getText());
+							int fourY = getInt(textFourY.getText());
+							if (fourX <= 0 || fourY <= 0)
+							{
+								MessageUtil.showErrorDialog(GroupShell.this, "错误",
+										"分组四设置坐标不合法，请检查后保存");
+								return;
+							}
 							bean.getGatherBean().setMinKm(fourMin);
 							bean.getGatherBean().setMaxKm(fourMax);
 							bean.getGroupBean().setDefinReseach(true);
