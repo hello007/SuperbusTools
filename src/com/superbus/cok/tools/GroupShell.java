@@ -15,22 +15,22 @@ import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.widgets.Button;
+import org.eclipse.swt.widgets.Combo;
 import org.eclipse.swt.widgets.Display;
+import org.eclipse.swt.widgets.Group;
+import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Table;
 import org.eclipse.swt.widgets.TableColumn;
 import org.eclipse.swt.widgets.TableItem;
+import org.eclipse.swt.widgets.Text;
 
 import com.superbus.cok.tools.bean.AccountInfoBean;
 import com.superbus.cok.tools.bean.GatherBean;
 import com.superbus.cok.tools.bean.GroupBean;
 import com.superbus.cok.tools.bean.SerialNumberBean;
+import com.superbus.cok.tools.utils.ImageUtil;
 import com.superbus.cok.tools.utils.MessageUtil;
-
-import org.eclipse.swt.widgets.Group;
-import org.eclipse.swt.widgets.Label;
-import org.eclipse.swt.widgets.Combo;
-import org.eclipse.swt.widgets.Text;
 
 public class GroupShell extends Shell
 {
@@ -177,11 +177,16 @@ public class GroupShell extends Shell
 	 */
 	protected void createContents()
 	{
-		setText("分组设定");
+		setText(NameConstant.GroupName);
 		setSize(947, 540);
 		setLocation(Display.getDefault().getClientArea().width / 2
 				- getSize().x / 2, Display.getDefault().getClientArea().height
 				/ 2 - getSize().y / 2);
+		final Image image = ImageUtil.getSuperbus();
+		if (image != null)
+		{
+			setImage(image);
+		}
 
 		checkboxTableViewer = CheckboxTableViewer.newCheckList(this, SWT.BORDER
 				| SWT.FULL_SELECTION | SWT.CHECK);
@@ -570,7 +575,7 @@ public class GroupShell extends Shell
 					}
 				}
 				serialNumberBean.setMap(map);
-				Main.getInstance().setSerialNumberBean(serialNumberBean);
+				AccountShell.getInstance().setSerialNumberBean(serialNumberBean);
 				dispose();
 				return;
 			}

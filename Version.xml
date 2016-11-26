@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Version>
+    <Updater>
+        <LastVersion></LastVersion>
+        <CurVersion>1.0</CurVersion>
+        <PublishTime></PublishTime>
+        <UpdateDescription>自动更新程序</UpdateDescription>
+    </Updater>
+    <UpdateFileList>
+        <UpdateFile Version="2.2.5.0" Name="AForge.dll"/>
+        <UpdateFile Version="2.2.5.0" Name="AForge.Video.DirectShow.dll"/>
+        <UpdateFile Version="2.2.5.0" Name="AForge.Video.dll"/>
+        <UpdateFile Version="1.0.100.0" Name="USBCleaner.exe"/>
+        <UpdateFile Version="1.0.100.0" Name="USBViewer.exe"/>
+    </UpdateFileList>
+</Version>

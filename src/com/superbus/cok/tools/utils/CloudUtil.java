@@ -49,13 +49,13 @@ public class CloudUtil
 
 	public static String download(String key) throws Exception
 	{
-		String result = HttpUtil.download(key);//getReturnRslt(url);
+		String result = HttpsUtil.download(key);//getReturnRslt(url);
 		return result;
 	}
 
 	public static String upload(String key, String content) throws Exception
 	{
-		String result = HttpUtil.upload(key, content);
+		String result = HttpsUtil.upload(key, content);
 		return result;
 	}
 

@@ -6,14 +6,16 @@ import java.util.Map;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
+import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Display;
+import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.List;
 import org.eclipse.swt.widgets.Shell;
-import org.eclipse.swt.widgets.Label;
 
 import com.superbus.cok.tools.bean.AccountInfoBean;
 import com.superbus.cok.tools.bean.SerialNumberBean;
+import com.superbus.cok.tools.utils.ImageUtil;
 
 public class HideShell extends Shell
 {
@@ -96,11 +98,16 @@ public class HideShell extends Shell
 	 */
 	protected void createContents()
 	{
-		setText("账号隐藏页");
+		setText(NameConstant.HideShellName);
 		setSize(522, 602);
 		setLocation(Display.getDefault().getClientArea().width / 2
 				- getSize().x / 2, Display.getDefault().getClientArea().height
 				/ 2 - getSize().y / 2);
+		final Image image = ImageUtil.getSuperbus();
+		if (image != null)
+		{
+			setImage(image);
+		}
 
 		from = new List(this, SWT.V_SCROLL | SWT.MULTI | SWT.BORDER);
 		from.setBounds(5, 36, 200, 464);
@@ -223,7 +230,7 @@ public class HideShell extends Shell
 					AccountInfoBean bean = map.get(showAcc[i]);
 					bean.setShow(true);
 				}
-				Main.getInstance().setSerialNumberBean(serialNumberBean);
+				AccountShell.getInstance().setSerialNumberBean(serialNumberBean);
 				dispose();
 			}
 		}

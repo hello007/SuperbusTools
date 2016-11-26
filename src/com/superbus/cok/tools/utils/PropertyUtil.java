@@ -34,7 +34,7 @@ public class PropertyUtil
 		{
 			e.printStackTrace();
 		}
-		return null;
+		return prop;
 	}
 
 	/**

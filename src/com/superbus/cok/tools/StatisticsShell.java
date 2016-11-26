@@ -1,20 +1,28 @@
 package com.superbus.cok.tools;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
+import org.apache.log4j.Logger;
 import org.eclipse.jface.viewers.ILabelProviderListener;
 import org.eclipse.jface.viewers.IStructuredContentProvider;
 import org.eclipse.jface.viewers.ITableLabelProvider;
 import org.eclipse.jface.viewers.TableViewer;
 import org.eclipse.jface.viewers.Viewer;
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.events.ModifyEvent;
+import org.eclipse.swt.events.ModifyListener;
 import org.eclipse.swt.events.MouseAdapter;
 import org.eclipse.swt.events.MouseEvent;
 import org.eclipse.swt.events.MouseListener;
+import org.eclipse.swt.events.SelectionAdapter;
+import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.layout.FillLayout;
 import org.eclipse.swt.widgets.Button;
+import org.eclipse.swt.widgets.Combo;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Display;
@@ -28,11 +36,27 @@ import org.eclipse.swt.widgets.Text;
 
 import com.superbus.cok.tools.bean.StatisticsBean;
 import com.superbus.cok.tools.utils.DateUtil;
-import com.superbus.cok.tools.utils.HttpUtil;
+import com.superbus.cok.tools.utils.ImageUtil;
 import com.superbus.cok.tools.utils.MessageUtil;
+import com.superbus.cok.tools.utils.NumberUtil;
+import com.superbus.cok.tools.utils.Result;
+import com.superbus.cok.tools.utils.ShowProcessDialog;
+import com.superbus.cok.tools.utils.ShowTimeDialog;
+
+import org.eclipse.swt.widgets.Label;
+import org.eclipse.wb.swt.SWTResourceManager;
 
 public class StatisticsShell extends Shell
 {
+	private static Logger logger = Logger.getLogger(StatisticsShell.class);
+
+	private static StatisticsShell mainShell = new StatisticsShell(
+			Display.getDefault());
+
+	public static StatisticsShell getInstance()
+	{
+		return mainShell;
+	}
 
 	/**
 	 * Launch the application.
@@ -67,36 +91,52 @@ public class StatisticsShell extends Shell
 	 */
 	public StatisticsShell(Display display)
 	{
-		super(display, SWT.SHELL_TRIM);
+		super(display, ShellStyle.FixedSize);
 
 		createContents();
 
-		//initData("55A11A31E81A96EDD3D9E350974FFBA5");
+		// initData("55A11A31E81A96EDD3D9E350974FFBA5");
+		setCompositeVisible();
 	}
-	
+
+	/**
+	 * @wbp.parser.constructor
+	 */
 	public StatisticsShell(Shell shell, int style)
 	{
 		super(shell, style);
 		createContents();
+		setCompositeVisible();
 	}
-	
-	
+
+	private void setCompositeVisible()
+	{
+		gotoSettingButton.setVisible(false);
+	}
+
 	private String currentKey = null;
 	Composite resourceComposite;
+	TabItem infoQueue;
 
 	/**
 	 * Create contents of the shell.
 	 */
 	protected void createContents()
 	{
-		setText("统计信息预览");
-		setSize(800, 800);
+		logger.info("创建StatisticsShell！");
+		setText(NameConstant.statisticsName);
+		setSize(800, 863);
 		setLocation(Display.getDefault().getClientArea().width / 2
 				- getSize().x / 2, Display.getDefault().getClientArea().height
 				/ 2 - getSize().y / 2);
+		final Image image = ImageUtil.getSuperbus();
+		if (image != null)
+		{
+			setImage(image);
+		}
 
 		TabFolder tabFolder = new TabFolder(this, SWT.NONE);
-		tabFolder.setBounds(10, 46, 762, 697);
+		tabFolder.setBounds(10, 119, 762, 697);
 		tabFolder.setSelection(0);
 
 		TabItem infoBasic = new TabItem(tabFolder, SWT.NONE);
@@ -113,21 +153,94 @@ public class StatisticsShell extends Shell
 		infoResource.setControl(resourceComposite);
 		createResource(resourceComposite);
 
-		TabItem infoQueue = new TabItem(tabFolder, SWT.NONE);
-		infoQueue.setText("队列信息");
-
-		Composite composite_2 = new Composite(tabFolder, SWT.NONE);
-		infoQueue.setControl(composite_2);
-		createQueue(composite_2);
+		// infoQueue = new TabItem(tabFolder, SWT.NONE);
+		// infoQueue.setText("队列信息");
+		//
+		// Composite composite_2 = new Composite(tabFolder, SWT.NONE);
+		// infoQueue.setControl(composite_2);
+		// createQueue(composite_2);
 
 		cardText = new Text(this, SWT.BORDER);
-		cardText.setBounds(10, 10, 381, 30);
+		cardText.setBounds(10, 19, 381, 30);
 		cardText.setMessage("其他序列号信息查询");
 
 		searchButton = new Button(this, SWT.NONE);
-		searchButton.setBounds(404, 10, 98, 30);
-		searchButton.setText("查询");
 		searchButton.addMouseListener(searchListener);
+		searchButton.setBounds(411, 19, 98, 30);
+		searchButton.setText("查询");
+
+		gotoSettingButton = new Button(this, SWT.NONE);
+		gotoSettingButton.addSelectionListener(new SelectionAdapter()
+		{
+			@Override
+			public void widgetSelected(SelectionEvent e)
+			{
+				AccountShell accountShell = AccountShell.getInstance();
+				accountShell.open(StatisticsShell.this, cardText.getText());
+			}
+		});
+		gotoSettingButton.setBounds(515, 10, 111, 30);
+		gotoSettingButton.setText("跳转到设置页面");
+
+		Group group = new Group(this, SWT.NONE);
+		group.setText("历史卡号展示及编辑");
+		group.setBounds(10, 53, 762, 60);
+
+		historyNumCombo = new Combo(group, SWT.READ_ONLY);
+		historyNumCombo.setBounds(10, 25, 381, 28);
+		historyNumCombo.addModifyListener(new ModifyListener()
+		{
+
+			@Override
+			public void modifyText(ModifyEvent arg0)
+			{
+				cardText.setText(historyNumCombo.getText());
+
+			}
+		});
+
+		Button button = new Button(group, SWT.NONE);
+		button.setBounds(407, 23, 169, 30);
+		button.setText("从当前列表中删除该卡号");
+
+		Label lbln = new Label(this, SWT.NONE);
+		lbln.setForeground(SWTResourceManager.getColor(SWT.COLOR_RED));
+		lbln.setBounds(558, 10, 214, 20);
+		lbln.setText("列王巴士辅助1群 217769463");
+
+		Label label = new Label(this, SWT.NONE);
+		label.setForeground(SWTResourceManager.getColor(SWT.COLOR_RED));
+		label.setText("列王巴士辅助2群 239967066");
+		label.setBounds(558, 32, 214, 20);
+
+		button.addSelectionListener(new SelectionAdapter()
+		{
+
+			@Override
+			public void widgetSelected(SelectionEvent e)
+			{
+				String curNum = historyNumCombo.getText();
+				PropertyMethod.removeSerialNum(curNum);
+				comboRemoveKey();
+			}
+
+		});
+	}
+
+	public void initSerialNum()
+	{
+		String[] allNum = PropertyMethod.getAllKeyNum();
+		if (allNum != null && allNum.length > 0)
+		{
+			currentKey = allNum[allNum.length - 1];
+			historyNumCombo.removeAll();
+			historyNumCombo.setItems(allNum);
+			historyNumCombo.select(allNum.length - 1);
+		}
+		if (currentKey != null && currentKey.length() == 32)
+		{
+			cardText.setText(currentKey);
+		}
 	}
 
 	Button check顺序, check账号, check密码, check平台, check版本, check领主名, check领主等级,
@@ -154,7 +267,7 @@ public class StatisticsShell extends Shell
 	{
 		saveButton = new Button(composite, SWT.NONE);
 		saveButton.setBounds(661, 77, 84, 30);
-		saveButton.setText("保存展示");
+		saveButton.setText("保存信息");
 		saveButton.addMouseListener(saveListener);
 
 		allUnselectButton = new Button(composite, SWT.NONE);
@@ -203,7 +316,10 @@ public class StatisticsShell extends Shell
 	private Table basicTable, resourceTable, queueTable;
 	int tableRow = 0, resourceRow = 0;
 	private Text cardText;
-	private Button searchButton, saveButton, allSelectButton;
+	private Button searchButton, saveButton, allSelectButton,
+			gotoSettingButton;
+	private Combo historyNumCombo;
+	private long lastClickSearchTime = 0;
 	/**
 	 * 反向选择
 	 */
@@ -252,8 +368,52 @@ public class StatisticsShell extends Shell
 			return;
 		}
 		currentKey = key.trim();
-		cardText.setText(key);
-		initData(HttpUtil.queryAccount(key));
+		cardText.setText(currentKey);
+		// List<StatisticsBean> beans = HttpsUtil.queryAccount(key);
+		ShowProcessDialog dialog = new ShowProcessDialog(this, currentKey);
+		dialog.setTypeResult(Result.queryAccount);
+		List<StatisticsBean> beans = (List<StatisticsBean>) dialog.open();
+
+		// 下载成功的将key保存到userInfo中
+		PropertyMethod.saveSerialNum(currentKey);
+		// 将historyCombo刷新
+		// comboRemoveKey();
+		String[] strings = historyNumCombo.getItems();
+		historyNumCombo.removeAll();
+		Set<String> set = new HashSet<String>();
+		for (String string : strings)
+		{
+			set.add(string);
+			if (string != null && string.length() == 32)
+			{
+				historyNumCombo.add(string);
+			}
+		}
+		if (!set.contains(currentKey))
+		{
+			historyNumCombo.add(currentKey);
+		}
+		historyNumCombo.setText(currentKey);
+		initData(beans);
+	}
+
+	private void comboRemoveKey()
+	{
+		String[] allNum = PropertyMethod.getAllKeyNum();
+		if (allNum == null)
+		{
+			return;
+		}
+		historyNumCombo.removeAll();
+		historyNumCombo.setItems(allNum);
+		if (allNum.length > 0)
+		{
+			historyNumCombo.select(allNum.length - 1);
+			cardText.setText(allNum[allNum.length - 1]);
+		} else
+		{
+			cardText.setText("");
+		}
 	}
 
 	private void initData(List<StatisticsBean> listBeans)
@@ -284,7 +444,7 @@ public class StatisticsShell extends Shell
 		{
 			TableColumn newColumnTableColumn_1 = new TableColumn(resourceTable,
 					SWT.CENTER);
-			newColumnTableColumn_1.setWidth(150);
+			newColumnTableColumn_1.setWidth(115);
 			newColumnTableColumn_1.setText(resourceNames[i]);
 		}
 
@@ -333,6 +493,12 @@ public class StatisticsShell extends Shell
 								{
 									value = "暂无";
 								}
+								list.add(value);
+								continue;
+							} else if (key != null && key.trim().equals("战力"))
+							{
+								String value = bean.getMap().get("战力");
+								value = NumberUtil.formatToPoint(value);
 								list.add(value);
 								continue;
 							}
@@ -392,12 +558,12 @@ public class StatisticsShell extends Shell
 							for (int j = 0; j < two.length; j++)
 							{
 								String value = bean.getMap().get(two[j]);
-								if(value == null || value.trim().equals(""))
+								if (value == null || value.trim().equals(""))
 								{
 									value = "暂无";
 								}
 								result.append(value);
-								if(j != two.length - 1)
+								if (j != two.length - 1)
 								{
 									result.append("/");
 								}
@@ -405,16 +571,17 @@ public class StatisticsShell extends Shell
 							list.add(result.toString());
 						} else
 						{
-							if("刷新时间".equals(name))
+							if ("刷新时间".equals(name))
 							{
 								name = "本地时间";
 								String value = bean.getMap().get(name);
-								if(value == null || value.trim().equals(""))
+								if (value == null || value.trim().equals(""))
 								{
 									value = "暂无";
-								}else
+								} else
 								{
-									value = DateUtil.formatUnixTime(Long.parseLong(value));
+									value = DateUtil.formatUnixTime(Long
+											.parseLong(value));
 								}
 								list.add(value);
 								continue;
@@ -688,6 +855,16 @@ public class StatisticsShell extends Shell
 			{
 				return;
 			}
+			long currentTime = System.currentTimeMillis();
+			if (currentTime - lastClickSearchTime < 5000)
+			{
+				ShowTimeDialog dialog = new ShowTimeDialog(StatisticsShell.this);
+				long delta = currentTime - lastClickSearchTime;
+				int delayTime = (int) (delta / 1000);
+				dialog.open(delayTime);
+				return;
+			}
+			lastClickSearchTime = System.currentTimeMillis();
 			String card = cardText.getText();
 			if (card == null || card.trim().equals("")
 					|| card.trim().length() != 32)
@@ -696,14 +873,13 @@ public class StatisticsShell extends Shell
 						"卡号不合法，请检查后重试");
 				return;
 			}
-			if (card.trim().equals(currentKey))
-			{
-				changeBasicTableData();
-				return;
-			}
+			// if (card.trim().equals(currentKey))
+			// {
+			// changeBasicTableData();
+			// return;
+			// }
 			card = card.toUpperCase();
 			initData(card);
-			;
 		}
 	};
 
@@ -741,4 +917,5 @@ public class StatisticsShell extends Shell
 		}
 
 	};
+	private Text txtn;
 }
